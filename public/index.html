@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Decentralized Exchange</title>
+</head>
+<body>
+    <header>
+        <h1>Decentralized Exchange</h1>
+    </header>
+    <main>
+        <section id="account">
+            <h2>Your Account</h2>
+            <p><strong>Connected Address:</strong> <span id="account-address"></span></p>
+            <button id="connect-wallet">Connect Wallet</button>
+        </section>
+        <section id="trade">
+            <h2>Trade</h2>
+            <div>
+                <label for="token-amount">Amount:</label>
+                <input type="number" id="token-amount" placeholder="Amount">
+            </div>
+            <div>
+                <label for="token-pair">Token Pair:</label>
+                <select id="token-pair">
+                    <option value="ETH-DAI">ETH-DAI</option>
+                    <option value="ETH-USDC">ETH-USDC</option>
+                    <!-- Add more token pairs as needed -->
+                </select>
+            </div>
+            <button id="place-order">Place Order</button>
+        </section>
+        <section id="order-book">
+            <h2>Order Book</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Price</th>
+                        <th>Amount</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="order-list">
+                    <!-- Order book data will be populated here -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <script src="web3.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
