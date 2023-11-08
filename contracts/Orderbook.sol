@@ -42,6 +42,8 @@ contract Orderbook {
         require (_quantity > 0, "Quantity must be greater than zero");
 
         uint orderValue = _price * _quantity;
+
+        IERC20(_quoteToken).approve(address(this), orderValue);
         require(IERC20(_quoteToken).allowance(msg.sender, address(this)) >= orderValue, "Allowance not enough");
         uint id = buyOrders.length;
         Order memory newOrder = Order(id,msg.sender,_price, _quantity, false,true, _baseToken,_quoteToken);
@@ -53,6 +55,7 @@ contract Orderbook {
     function sellLimitOrder(uint _price , uint _quantity, address _baseToken, address _quoteToken) external {
         require (_price > 0 , "Price must be greater than zero");
         require (_quantity > 0, "Quantity must be greater than zero");
+        IERC20(_quoteToken).approve(address(this), _quantity);
         require(IERC20(_baseToken).allowance(msg.sender, address(this)) >= _quantity, "Allowance not enough");
 
         uint id = sellOrders.length;
