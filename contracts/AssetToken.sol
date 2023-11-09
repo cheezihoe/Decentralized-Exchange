@@ -34,3 +34,5 @@ contract AssetIssuerToken is ERC20 {
         _burn(account, amount);
     }
 }
+
+
