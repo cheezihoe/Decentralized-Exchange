@@ -3,18 +3,17 @@ window.addEventListener('load', async () => {
         const web3Provider = new Web3(window.ethereum);
 
         // Load the ABI asynchronously using fetch
-        const abiResponse = await fetch('/artifacts/contracts/AssetIssuerToken.sol/AssetIssuerToken.json');
+        const abiResponse = await fetch('/AssetIssuerToken.json');
         const assetIssuerTokenArtifact = await abiResponse.json();
         const abi = assetIssuerTokenArtifact.abi;
 
         // Load the Bytecode asynchronously
-        const bytecodeResponse = await fetch('/artifacts/contracts/AssetIssuerToken.sol/AssetIssuerToken.json');
-        const bytecode = await bytecodeResponse.json();
+        const bytecode = assetIssuerTokenArtifact.bytecode;
 
         console.log('ABI:', abi);
         console.log('Bytecode:', bytecode)
 
-        // // Create a contract instance for AssetToken
+        // Create a contract instance for AssetToken
         const assetTokenContract = new web3Provider.eth.Contract(abi);
 
         // Add event listener for the "Connect Wallet" button
@@ -35,21 +34,21 @@ window.addEventListener('load', async () => {
         document.getElementById('issue-asset').addEventListener('click', async () => {
             const assetName = document.getElementById('asset-name').value;
             const assetSymbol = document.getElementById('asset-symbol').value;
-            const issueAmount = document.getElementById('issue-amount').value;
-
+            const initialSupply = document.getElementById('initial-supply').value; // Add an input for initial supply
+        
             try {
                 const accounts = await web3Provider.eth.requestAccounts();
                 const account = accounts[0];
-
+        
                 // Deploy a new AssetToken contract
                 const deployedToken = await assetTokenContract.deploy({
-                    data: assetTokenBytecode,
-                    arguments: [assetName, assetSymbol],
+                    data: bytecode,
+                    arguments: [assetName, assetSymbol, initialSupply], // Pass three arguments
                 }).send({ from: account });
-
+        
                 // Mint new tokens
-                await deployedToken.methods.mint(account, issueAmount).send({ from: account });
-
+                await deployedToken.methods.mint(account, initialSupply).send({ from: account });
+        
                 console.log('Asset issued!');
             } catch (error) {
                 console.error('Error issuing asset:', error);
