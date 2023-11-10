@@ -2,12 +2,20 @@ window.addEventListener('load', async () => {
     if (window.ethereum) {
         const web3Provider = new Web3(window.ethereum);
 
-        // Load the ABI and bytecode of your AssetToken contract
-        const assetTokenAbi = [...]; // Replace with your actual ABI
-        const assetTokenBytecode = '0x...'; // Replace with your actual bytecode
+        // Load the ABI asynchronously using fetch
+        const abiResponse = await fetch('/artifacts/contracts/AssetIssuerToken.sol/AssetIssuerToken.json');
+        const assetIssuerTokenArtifact = await abiResponse.json();
+        const abi = assetIssuerTokenArtifact.abi;
 
-        // Create a contract instance for AssetToken
-        const assetTokenContract = new web3Provider.eth.Contract(assetTokenAbi);
+        // Load the Bytecode asynchronously
+        const bytecodeResponse = await fetch('/artifacts/contracts/AssetIssuerToken.sol/AssetIssuerToken.json');
+        const bytecode = await bytecodeResponse.json();
+
+        console.log('ABI:', abi);
+        console.log('Bytecode:', bytecode)
+
+        // // Create a contract instance for AssetToken
+        const assetTokenContract = new web3Provider.eth.Contract(abi);
 
         // Add event listener for the "Connect Wallet" button
         document.getElementById('connect-wallet').addEventListener('click', async () => {
