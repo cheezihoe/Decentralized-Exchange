@@ -44,11 +44,17 @@
                 <input type="number" id="buy-order-quantity" placeholder="Quantity">
             </div>
             <div>
-                <label for="buy-order-token-pair">Token Pair:</label>
-                <select id="buy-order-token-pair">
-                    <option value="ETH-DAI">ETH-DAI</option>
-                    <option value="ETH-USDC">ETH-USDC</option>
-                    <!-- Add more token pairs as needed -->
+                <label for="buy-order-base-token">Base Token:</label>
+                <select id="buy-order-base-token">
+                    <option value="ETH">ETH</option>
+                    <!-- Add more base tokens as needed -->
+                </select>
+            </div>
+            <div>
+                <label for="buy-order-quote-token">Quote Token:</label>
+                <select id="buy-order-quote-token">
+                    <option value="DAI">DAI</option>
+                    <!-- Add more quote tokens as needed -->
                 </select>
             </div>
             <button id="place-buy-order">Place Buy Order</button>
@@ -64,11 +70,17 @@
                 <input type="number" id="sell-order-quantity" placeholder="Quantity">
             </div>
             <div>
-                <label for="sell-order-token-pair">Token Pair:</label>
-                <select id="sell-order-token-pair">
-                    <option value="ETH-DAI">ETH-DAI</option>
-                    <option value="ETH-USDC">ETH-USDC</option>
-                    <!-- Add more token pairs as needed -->
+                <label for="sell-order-base-token">Base Token:</label>
+                <select id="sell-order-base-token">
+                    <option value="ETH">ETH</option>
+                    <!-- Add more base tokens as needed -->
+                </select>
+            </div>
+            <div>
+                <label for="sell-order-quote-token">Quote Token:</label>
+                <select id="sell-order-quote-token">
+                    <option value="DAI">DAI</option>
+                    <!-- Add more quote tokens as needed -->
                 </select>
             </div>
             <button id="place-sell-order">Place Sell Order</button>
