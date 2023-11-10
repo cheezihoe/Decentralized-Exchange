@@ -3,18 +3,24 @@ window.addEventListener('load', async () => {
         const web3Provider = new Web3(window.ethereum);
 
         // Load the ABI asynchronously using fetch
-        const abiResponse = await fetch('/AssetIssuerToken.json');
-        const assetIssuerTokenArtifact = await abiResponse.json();
-        const abi = assetIssuerTokenArtifact.abi;
+        const abiAITResponse = await fetch('/AssetIssuerToken.json');
+        const assetIssuerTokenArtifact = await abiAITResponse.json();
+        const abiAIT = assetIssuerTokenArtifact.abi;
+
+        const abiOBResponse = await fetch('/Orderbook.json');
+        const OrderbookArtifact = await abiOBResponse.json();
+        const abiOB = OrderbookArtifact.abi;
 
         // Load the Bytecode asynchronously
-        const bytecode = assetIssuerTokenArtifact.bytecode;
+        const AITbytecode = assetIssuerTokenArtifact.bytecode;
+        const OBbytecode = OrderbookArtifact.bytecode;
 
-        console.log('ABI:', abi);
-        console.log('Bytecode:', bytecode)
+        console.log('ABI:', abiOB);
+        console.log('Bytecode:', OBbytecode)
 
         // Create a contract instance for AssetToken
-        const assetTokenContract = new web3Provider.eth.Contract(abi);
+        const assetTokenContract = new web3Provider.eth.Contract(abiAIT);
+        const OrderbookContract = new web3Provider.eth.Contract(abiOB);
 
         // Add event listener for the "Connect Wallet" button
         document.getElementById('connect-wallet').addEventListener('click', async () => {
@@ -54,6 +60,30 @@ window.addEventListener('load', async () => {
                 console.error('Error issuing asset:', error);
             }
         });
+
+         document.getElementById('place-buy-order-btn').addEventListener('click', async () => {
+             const Price = document.getElementById('buy-order-price').value;
+             const quantity = document.getElementById('buy-order-quantity').value;
+             const baseToken = document.getElementById('buy-order-base-token').value;
+             const quoteToken = document.getElementById('buy-order-quote-token').value;
+             try {
+                const order = await OrderbookContract.methods.buyLimitOrder(Price,quantity,baseToken,quoteToken)
+                console.log('Order:', order.arguments); 
+   
+                const tableBody = document.querySelector('#buy-order-list');
+                const row = tableBody.insertRow();
+                const reversedArguments = order.arguments.slice().reverse();
+                reversedArguments.forEach(argument => {
+
+                    // Assuming each element in the array is a string
+                    const argumentCell = row.insertCell(0);
+                    argumentCell.textContent = argument;
+                });
+
+            } catch (error) {
+                console.error ('Error issuing buy order', error);
+            }
+        });   
 
         // Fetch and display order book data
         // You will need to retrieve and display order book data here
