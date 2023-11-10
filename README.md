@@ -5,6 +5,8 @@
 2. Type "cd Decentralized-Exchange" in the terminal to ensure that your in the project directory
 3. Type "npm install" in the terminal to install relevant packages
 4. (add how to deploy to local network)
+5. python -m http.server
+6. Open your web browser and navigate to http://localhost:8000
 
 
 
