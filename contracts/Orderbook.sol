@@ -36,34 +36,47 @@ contract Orderbook {
         bool isBuyOrder
     );
 
+    event Traded (
+        uint price,
+        uint quantity,
+        address baseToken,
+        address quoteToken
+    );
+
+    event Inserted (
+        Order order
+    );
     //Place buy limit order
     function buyLimitOrder(uint _price , uint _quantity, address _baseToken, address _quoteToken) external {
+
         require (_price > 0 , "Price must be greater than zero");
         require (_quantity > 0, "Quantity must be greater than zero");
 
-        uint orderValue = _price * _quantity;
+        //uint orderValue = _price * _quantity;
 
-        IERC20(_quoteToken).approve(address(this), orderValue);
-        require(IERC20(_quoteToken).allowance(msg.sender, address(this)) >= orderValue, "Allowance not enough");
+        //require(IERC20(_quoteToken).allowance(msg.sender, address(this)) >= orderValue, "Allowance not enough");
         uint id = buyOrders.length;
         Order memory newOrder = Order(id,msg.sender,_price, _quantity, false,true, _baseToken,_quoteToken);
         insertBuyOrder(newOrder);
         matchBuyOrders(findCorrectBuyOrder(newOrder.id));
+        emit Traded(_price,_quantity,_baseToken,_quoteToken);
+
+        
   
     }
 
     function sellLimitOrder(uint _price , uint _quantity, address _baseToken, address _quoteToken) external {
         require (_price > 0 , "Price must be greater than zero");
         require (_quantity > 0, "Quantity must be greater than zero");
-        IERC20(_quoteToken).approve(address(this), _quantity);
-        require(IERC20(_baseToken).allowance(msg.sender, address(this)) >= _quantity, "Allowance not enough");
+
+        //require(IERC20(_baseToken).allowance(msg.sender, address(this)) >= _quantity, "Allowance not enough");
 
         uint id = sellOrders.length;
         Order memory newOrder = Order(id,msg.sender,_price, _quantity, false,false, _baseToken,_quoteToken);
         insertSellOrder(newOrder);
         matchSellOrders(findCorrectSellOrder(newOrder.id));
   
- 
+        emit Traded(_price,_quantity,_baseToken,_quoteToken);
     }
 
     function matchBuyOrders(uint buyOrderPlacement) internal {
@@ -165,6 +178,7 @@ contract Orderbook {
             length--;
         }
         buyOrders[length] = _newOrder;
+        emit Inserted (_newOrder);
     }
 
     //Insert sell orders to array from lowest to highest price
@@ -222,5 +236,13 @@ contract Orderbook {
 
     function min(uint a, uint b) internal pure returns (uint){
         return a < b ? a : b;
+    }
+
+    function getBuyArray() public view returns (Order[] memory) {
+        return buyOrders;
+    }
+    
+    function getsellArray() public view returns (Order[] memory) {
+        return sellOrders;
     }
 }
