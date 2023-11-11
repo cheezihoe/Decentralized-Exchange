@@ -318,7 +318,7 @@ window.addEventListener('load', async () => {
                 }
                 
 
-
+                fetchUserTransactionsSELL(Price1,quantity1,baseToken1,quoteToken1);
            } catch (error) {
                console.error ('Error issuing sell order', error);
            }
