@@ -27,6 +27,9 @@ window.addEventListener('load', async () => {
 
         const baseContract = new web3Provider.eth.Contract(abiAIT, '0xd1a11f66bBDB8999262aCb694E97A2b34D41f3c7') 
         const quoteContract = new web3Provider.eth.Contract(abiAIT, '0xde465D7dc0eF6aA56F6a1365af89F3AA73BEa586') 
+
+        const accounts = await web3Provider.eth.requestAccounts();
+        const account = accounts[0];
         
   
         // Add event listener for the "Connect Wallet" button
@@ -174,9 +177,57 @@ window.addEventListener('load', async () => {
            } catch (error) {
                console.error ('Error issuing buy order', error);
            }
-       });   
+       });
+       async function cancelOrder(id, isBuyOrder) {
+        try {
+            await OrderbookContract.methods.cancelOrder(id, isBuyOrder).send({ from: accounts[0] });
+            console.log(`Order with ID ${id} cancelled successfully`);
+            // You may want to refresh the user transactions table after cancellation
+            fetchUserTransactions();
+        } catch (error) {
+            console.error(`Error cancelling order with ID ${id}:`, error);
+        }
+    }
+       
+       // Function to fetch and populate user transactions
+        async function fetchUserTransactions() {
+            const userTransactionList = document.getElementById('user-transaction-list');
+            userTransactionList.innerHTML = ''; // Clear previous content
+
+            try {
+                // Fetch user transactions (both buy and sell orders)
+                const userTransactions = await OrderbookContract.methods.getBuyArray(0).call();
+                console.log(userTransactions);
+                // const userTransactions = await OrderbookContract.methods.getSellArray(0).call();
+                customId = 0;
+                // Iterate through user transactions and create rows
+                userTransactions.forEach(transaction => {
+                    
+                    const row = userTransactionList.insertRow();
+                    // Add cells based on transaction properties (id, price, quantity, etc.)
+                    row.insertCell(0).textContent = customId;
+                    customId++;
+                    row.insertCell(1).textContent = transaction.price;
+                    row.insertCell(2).textContent = transaction.quantity;
+                    row.insertCell(3).textContent = transaction.baseToken;
+                    row.insertCell(4).textContent = transaction.quoteToken;
+
+                    // Add a 'Cancel' button with an event listener to cancel the order
+                    const cancelButton = document.createElement('button');
+                    cancelButton.textContent = 'Cancel';
+                    cancelButton.addEventListener('click', () => cancelOrder(transaction.id,transaction.isisbuyOrder));
+
+                    const actionCell = row.insertCell(5);
+                    actionCell.appendChild(cancelButton);
+                });
+
+            } catch (error) {
+                console.error('Error fetching user transactions:', error);
+            }
+        }
 
         // Fetch and display order book data
+        fetchUserTransactions();
         // You will need to retrieve and display order book data here
     } else {
         alert('Please install the MetaMask extension for Google Chrome.');

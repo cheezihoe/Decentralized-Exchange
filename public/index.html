@@ -117,6 +117,25 @@
                 </tbody>
             </table>
         </section>
+        <div id="user-transaction-section">
+            <h2>User Transactions</h2>
+            <table id="user-transaction-list">
+                <thead>
+                    <!-- Include headers similar to buy and sell order books -->
+                    <tr>
+                        <th>ID</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Base Token</th>
+                        <th>Quote Token</th>
+                        <th>Action</th> <!-- Add a column for the cancel button -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- User transactions will be inserted here dynamically -->
+                </tbody>
+            </table>
+        </div>
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.5.0/web3.min.js"></script>
     <script src="app.js"></script>
