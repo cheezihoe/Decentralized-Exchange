@@ -22,7 +22,7 @@ window.addEventListener('load', async () => {
         // Create a contract instance for AssetToken
         const assetTokenContract = new web3Provider.eth.Contract(abiAIT);
 
-        const OrderbookAddress = '0x3D990363486e6260342A4beA56deb313D6C915Cb';
+        const OrderbookAddress = '0x4c0183A75A9E4E2F257ece78C7fb29bf580Ae6E6';
         const OrderbookContract = new web3Provider.eth.Contract(abiOB,OrderbookAddress);
 
         const baseContract = new web3Provider.eth.Contract(abiAIT, '0xd1a11f66bBDB8999262aCb694E97A2b34D41f3c7') 
@@ -78,58 +78,42 @@ window.addEventListener('load', async () => {
             const baseToken = document.getElementById('buy-order-base-token').value;
             const quoteToken = document.getElementById('buy-order-quote-token').value;
 
-            const baseTokenText = document.getElementById('buy-order-base-token').textContent;
+            //const baseTokenText = document.getElementById('buy-order-base-token').textContent;
             
              try {
                 const accounts = await web3Provider.eth.requestAccounts();
                 const account = accounts[0];
                 const total = Price*quantity;
 
-                // await quoteContract.methods.approve(OrderbookAddress, total).send({ from: account }, (error, transactionHash) => {
-                //   if (!error) {
-                //     // Transaction successful
-                //     console.log('Transaction hash:', transactionHash);
-                //   } else {
-                //     // Transaction failed
-                //     console.error('Transaction error:', error);
-                //   }
-                // });
+                await quoteContract.methods.approve(OrderbookAddress, total).send({ from: account }, (error, transactionHash) => {
+                  if (!error) {
+                    // Transaction successful
+                    console.log('Transaction hash:', transactionHash);
+                  } else {
+                    // Transaction failed
+                    console.error('Transaction error:', error);
+                  }
+                });
 
-                // await quoteContract.methods.allowance(account, OrderbookAddress).call()
-                //     .then(allowanceAmount => {
-                //       console.log(`Allowance: ${allowanceAmount}`);
-                //     })
-                //     .catch(error => {
-                //       console.error('Error checking allowance:', error);
-                //     });
+                await quoteContract.methods.allowance(account, OrderbookAddress).call()
+                    .then(allowanceAmount => {
+                      console.log(`Allowance: ${allowanceAmount}`);
+                    })
+                    .catch(error => {
+                      console.error('Error checking allowance:', error);
+                    });
 
                 //const addy = document.getElementById('account-address').textContent
                 
-                const order = await OrderbookContract.methods.buyLimitOrder(Price,quantity,baseToken,quoteToken);
-                const transaction = await order.send({from: account})
+                const buyorder = await OrderbookContract.methods.buyLimitOrder(Price,quantity,baseToken,quoteToken);
+                const transaction = await buyorder.send({from: account})
                 console.log(transaction);
-                 
-                // OrderbookContract.Traded(function(err, data) {
-                //     if (!err)
-                //     console.log(data);
-                //  }
-                // const result1 = await order
-                // console.log('result',result1.logs)
-                //console.log(OrderbookContract.events.Traded({fromBlock: 0}));
-                //OrderbookContract.events.Traded({fromBlock: 0} , (error, event) => { console.log(JSON.stringify(event)); }).on('data', (event) => {console.log("The event is : " + JSON.stringify(event));}).on('error', console.error);
-                // const subscription = await OrderbookContract.events.Traded()
-                // console.log(subscription);
-                // const results = await OrderbookContract.methods.getBuyArray();
-                // console.log (results.logs)
-                // console.log(await OrderbookContract.methods.getBuyArray().call())
-                console.log(OrderbookContract.methods.buyOrders(0))
-                // const array = await OrderbookContract.methods.getBuyArray();
                 
                 console.log(await OrderbookContract.methods.getBuyArray(0).call())
                 // console.log(array)
                 const tableBody = document.querySelector('#buy-order-list');
                 const row = tableBody.insertRow();
-                const reversedArguments = order.arguments.slice().reverse();
+                const reversedArguments = buyorder.arguments.slice().reverse();
                 reversedArguments.forEach(argument => {
 
                     // Assuming each element in the array is a string
@@ -153,29 +137,66 @@ window.addEventListener('load', async () => {
         });   
 
         document.getElementById('place-sell-order-btn').addEventListener('click', async () => {
-            // const Price = document.getElementById('sell-order-price').value;
-            // const quantity = document.getElementById('sell-order-quantity').value;
-            // const baseToken = document.getElementById('sell-order-base-token').value;
-            // const quoteToken = document.getElementById('sell-order-quote-token').value;
+            const Price = document.getElementById('sell-order-price').value;
+            const quantity = document.getElementById('sell-order-quantity').value;
+            const baseToken = document.getElementById('sell-order-base-token').value;
+            const quoteToken = document.getElementById('sell-order-quote-token').value;
+            console.log(Price)
+            console.log(quantity)
+            console.log(baseToken)
+            console.log(quoteToken)
             try {
-                const results = await OrderbookContract.methods.getBuyArray();
-                console.log (results)
- 
-            //    const order = await OrderbookContract.methods.sellLimitOrder(Price,quantity,baseToken,quoteToken)
-            //    console.log('Order:', order.arguments); 
-  
-            //    const tableBody = document.querySelector('#buy-order-list');
-            //    const row = tableBody.insertRow();
-            //    const reversedArguments = order.arguments.slice().reverse();
-            //    reversedArguments.forEach(argument => {
+                const accounts = await web3Provider.eth.requestAccounts();
+                const account = accounts[0];
+                console.log(account)
+                const total = Price*quantity;
 
-            //        // Assuming each element in the array is a string
-            //        const argumentCell = row.insertCell(0);
-            //        argumentCell.textContent = argument;
-               //});
+                // await baseContract.methods.approve(OrderbookAddress, quantity).send({ from: account }, (error, transactionHash) => {
+                //   if (!error) {
+                //     // Transaction successful
+                //     console.log('Transaction hash:', transactionHash);
+                //   } else {
+                //     // Transaction failed
+                //     console.error('Transaction error:', error);
+                //   }
+                // });
+
+                // await baseContract.methods.allowance(account, OrderbookAddress).call()
+                //     .then(allowanceAmount => {
+                //       console.log(`Allowance: ${allowanceAmount}`);
+                //     })
+                //     .catch(error => {
+                //       console.error('Error checking allowance:', error);
+                //     });
+
+                const sellorder = await OrderbookContract.methods.sellLimitOrder(Price,quantity,baseToken,quoteToken);
+                // const Transaction = await sellorder.send({from: account})
+                // console.log(Transaction);
+                console.log(await OrderbookContract.methods.getsellArray(0).call())
+
+                const tableBody = document.querySelector('#sell-order-list');
+                const row = tableBody.insertRow();
+                const reversedArguments = order.arguments.slice().reverse();
+                reversedArguments.forEach(argument => {
+
+                    // Assuming each element in the array is a string
+                    const argumentCell = row.insertCell(0);
+                    argumentCell.textContent = argument;
+                });
+
+                const rows = Array.from(tableBody.querySelectorAll('tr'));
+                rows.sort((a, b) => {
+                    const priceA = parseFloat(a.cells[0].textContent);
+                    const priceB = parseFloat(b.cells[0].textContent);
+                    return priceA - priceB;
+                });
+            
+                // Append the sorted rows back to the table
+                rows.forEach(row => tableBody.appendChild(row));
+
 
            } catch (error) {
-               console.error ('Error issuing buy order', error);
+               console.error ('Error issuing sell order', error);
            }
        });
        async function cancelOrder(id, isBuyOrder) {
