@@ -239,24 +239,32 @@ window.addEventListener('load', async () => {
                 //console.log(await OrderbookContract.methods.getsellArray(0).call())
 
                 const tableBody = document.querySelector('#sell-order-list');
-                const row = tableBody.insertRow();
-                const reversedArguments = order.arguments.slice().reverse();
-                reversedArguments.forEach(argument => {
+                const selllength = await OrderbookContract.methods.getsellArrayLength().call();
+                console.log(selllength)
+                while (tableBody.firstChild) {
+                    tableBody.removeChild(tableBody.firstChild);
+                  }
+                for (i = 0; i<selllength;i++ ){
+                    const sellstruct = await OrderbookContract.methods.getBuyArray(i).call();
 
-                    // Assuming each element in the array is a string
-                    const argumentCell = row.insertCell(0);
-                    argumentCell.textContent = argument;
-                });
+                    if (sellstruct[4]){
+                        continue;
+                    } else {
+                        const row = tableBody.insertRow();
+                        const price = row.insertCell(0);
+                        const quantity = row.insertCell(1);
+                        const baseaddress = row.insertCell(2);
+                        const quoteaddress = row.insertCell(3);
 
-                const rows = Array.from(tableBody.querySelectorAll('tr'));
-                rows.sort((a, b) => {
-                    const priceA = parseFloat(a.cells[0].textContent);
-                    const priceB = parseFloat(b.cells[0].textContent);
-                    return priceA - priceB;
-                });
-            
-                // Append the sorted rows back to the table
-                rows.forEach(row => tableBody.appendChild(row));
+                        
+
+                        price.textContent = sellstruct[2];
+                        quantity.textContent = sellstruct[3];
+                        baseaddress.textContent = sellstruct[6];
+                        quoteaddress.textContent = sellstruct[7];
+                    }
+                    
+                }
 
 
            } catch (error) {
