@@ -81,7 +81,7 @@ describe ("Orderbook", function () {
             const test = await orderbook.connect(trader2).buyLimitOrder(10,10,baseToken.target,quoteToken.target);
             const test1 = await test.wait()
             console.log(test1.logs)
-            console.log(await orderbook.buyOrders())
+            console.log(await orderbook.getBuyArray(0))
             //Place sell order from trader 1
             await expect(orderbook.connect(trader1).sellLimitOrder(10,10,baseToken.target,quoteToken.target)).to.emit(orderbook,"TradeMatched").withArgs(0,0,trader2.address,trader1.address,10,10);
             

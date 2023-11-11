@@ -22,7 +22,7 @@ window.addEventListener('load', async () => {
         // Create a contract instance for AssetToken
         const assetTokenContract = new web3Provider.eth.Contract(abiAIT);
 
-        const OrderbookAddress = '0x9fd140a1298ea2E8Fd42F8807476C3ecD3B56dC1';
+        const OrderbookAddress = '0x3D990363486e6260342A4beA56deb313D6C915Cb';
         const OrderbookContract = new web3Provider.eth.Contract(abiOB,OrderbookAddress);
 
         const baseContract = new web3Provider.eth.Contract(abiAIT, '0xd1a11f66bBDB8999262aCb694E97A2b34D41f3c7') 
@@ -114,14 +114,15 @@ window.addEventListener('load', async () => {
                 // console.log('result',result1.logs)
                 //console.log(OrderbookContract.events.Traded({fromBlock: 0}));
                 //OrderbookContract.events.Traded({fromBlock: 0} , (error, event) => { console.log(JSON.stringify(event)); }).on('data', (event) => {console.log("The event is : " + JSON.stringify(event));}).on('error', console.error);
-                const subscription = await OrderbookContract.events.Traded()
-                console.log(subscription);
+                // const subscription = await OrderbookContract.events.Traded()
+                // console.log(subscription);
                 // const results = await OrderbookContract.methods.getBuyArray();
                 // console.log (results.logs)
                 // console.log(await OrderbookContract.methods.getBuyArray().call())
-                console.log(await OrderbookContract.methods.buyOrders(0))
+                console.log(OrderbookContract.methods.buyOrders(0))
                 // const array = await OrderbookContract.methods.getBuyArray();
-                console.log(await OrderbookContract.methods.getBuyArray())
+                
+                console.log(await OrderbookContract.methods.getBuyArray(0).call())
                 // console.log(array)
                 const tableBody = document.querySelector('#buy-order-list');
                 const row = tableBody.insertRow();

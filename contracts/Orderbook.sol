@@ -190,6 +190,7 @@ contract Orderbook {
             length--;
         }
         sellOrders[length] = _newOrder;
+        emit Inserted (_newOrder);
     }    
 
     function findCorrectBuyOrder(uint _buyOrderid) internal view returns (uint) {
@@ -238,11 +239,18 @@ contract Orderbook {
         return a < b ? a : b;
     }
 
-    function getBuyArray() public view returns (Order[] memory) {
-        return buyOrders;
+   //function getBuyArray() public view returns (Order[] memory) {
+   //    return buyOrders;
+   //}
+    function getBuyArray(uint index) public view returns (Order memory) {
+    return (buyOrders[index]);
+
     }
-    
-    function getsellArray() public view returns (Order[] memory) {
-        return sellOrders;
+    // function getsellArray() public view returns (Order[] memory) {
+    //     return sellOrders;
+    // }
+    function getsellArray(uint index) public view returns (Order memory) {
+        return (sellOrders[index]);
+
     }
 }
