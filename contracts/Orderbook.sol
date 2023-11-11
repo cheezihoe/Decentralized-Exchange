@@ -246,6 +246,10 @@ contract Orderbook {
     return (buyOrders[index]);
 
     }
+
+    function getBuyArrayLength() public view returns (uint length) {
+        return (buyOrders.length);
+    }
     // function getsellArray() public view returns (Order[] memory) {
     //     return sellOrders;
     // }
@@ -253,4 +257,9 @@ contract Orderbook {
         return (sellOrders[index]);
 
     }
+
+    function getsellArrayLength() public view returns (uint length) {
+        return (sellOrders.length);
+    }
+
 }
