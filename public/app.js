@@ -22,7 +22,7 @@ window.addEventListener('load', async () => {
         // Create a contract instance for AssetToken
         const assetTokenContract = new web3Provider.eth.Contract(abiAIT);
 
-        const OrderbookAddress = '0x4c0183A75A9E4E2F257ece78C7fb29bf580Ae6E6';
+        const OrderbookAddress = '0xCDcFe6536557FA378CBc5F027719D6028C42fe45';
         const OrderbookContract = new web3Provider.eth.Contract(abiOB,OrderbookAddress);
 
         const baseContract = new web3Provider.eth.Contract(abiAIT, '0xd1a11f66bBDB8999262aCb694E97A2b34D41f3c7') 
@@ -88,23 +88,23 @@ window.addEventListener('load', async () => {
                 const account = accounts[0];
                 const total = Price*quantity;
 
-                // await quoteContract.methods.approve(OrderbookAddress, total).send({ from: account }, (error, transactionHash) => {
-                //   if (!error) {
-                //     // Transaction successful
-                //     console.log('Transaction hash:', transactionHash);
-                //   } else {
-                //     // Transaction failed
-                //     console.error('Transaction error:', error);
-                //   }
-                // });
+                await quoteContract.methods.approve(OrderbookAddress, total).send({ from: account }, (error, transactionHash) => {
+                  if (!error) {
+                    // Transaction successful
+                    console.log('Transaction hash:', transactionHash);
+                  } else {
+                    // Transaction failed
+                    console.error('Transaction error:', error);
+                  }
+                });
 
-                // await quoteContract.methods.allowance(account, OrderbookAddress).call()
-                //     .then(allowanceAmount => {
-                //       console.log(`Allowance: ${allowanceAmount}`);
-                //     })
-                //     .catch(error => {
-                //       console.error('Error checking allowance:', error);
-                //     });
+                await quoteContract.methods.allowance(account, OrderbookAddress).call()
+                    .then(allowanceAmount => {
+                      console.log(`Allowance: ${allowanceAmount}`);
+                    })
+                    .catch(error => {
+                      console.error('Error checking allowance:', error);
+                    });
 
                 //const addy = document.getElementById('account-address').textContent
                 
@@ -116,6 +116,7 @@ window.addEventListener('load', async () => {
                 console.log(await OrderbookContract.methods.getBuyArray(0).call())
 
                 const buylength = await OrderbookContract.methods.getBuyArrayLength().call();
+                const selllength = await OrderbookContract.methods.getsellArrayLength().call();
                 const tableBody = document.querySelector('#buy-order-list');
                 console.log(buylength)
                 while (tableBody.firstChild) {
@@ -125,6 +126,31 @@ window.addEventListener('load', async () => {
                     const buyStruct = await OrderbookContract.methods.getBuyArray(i).call();
 
                     if (buyStruct[4]){
+                        const tableBody1 = document.querySelector('#sell-order-list');
+                        while (tableBody1.firstChild) {
+                            tableBody1.removeChild(tableBody1.firstChild);
+                          }
+                        for (i = 0 ;i <selllength;i++) {
+                          const sellStruct = await OrderbookContract.methods.getsellArray(i).call();
+
+                          if (sellStruct[4]) {
+                            continue;
+                          } else {
+                            const row1 = tableBody1.insertRow();
+                            const price1 = row1.insertCell(0);
+                            const quantity1 = row1.insertCell(1);
+                            const baseaddress1 = row1.insertCell(2);
+                            const quoteaddress1 = row1.insertCell(3);
+
+                            price1.textContent = sellStruct[2];
+                            quantity1.textContent = sellStruct[3];
+                            baseaddress1.textContent = sellStruct[6];
+                            quoteaddress1.textContent = sellStruct[7]
+                          }
+                          
+                        }
+                        const sellList = document.getElementById('sell-order-list');
+                        console.log(sellList)
                         continue;
                     } else {
                         const row = tableBody.insertRow();
@@ -172,21 +198,19 @@ window.addEventListener('load', async () => {
         });   
 
         document.getElementById('place-sell-order-btn').addEventListener('click', async () => {
-            const Price = document.getElementById('sell-order-price').value;
-            const quantity = document.getElementById('sell-order-quantity').value;
-            const baseToken = document.getElementById('sell-order-base-token').value;
-            const quoteToken = document.getElementById('sell-order-quote-token').value;
-            console.log(Price)
-            console.log(quantity)
-            console.log(baseToken)
-            console.log(quoteToken)
+            const Price1 = document.getElementById('sell-order-price').value;
+            const quantity1 = document.getElementById('sell-order-quantity').value;
+            const baseToken1 = document.getElementById('sell-order-base-token').value;
+            const quoteToken1 = document.getElementById('sell-order-quote-token').value;
+            console.log(Price1)
+            console.log(quantity1)
             try {
-                const accounts = await web3Provider.eth.requestAccounts();
-                const account = accounts[0];
-                console.log(account)
-                const total = Price*quantity;
+                const accounts1 = await web3Provider.eth.requestAccounts();
+                const account1 = accounts1[0];
+                console.log(account1)
+                const total = Price1*quantity1;
 
-                await baseContract.methods.approve(OrderbookAddress, quantity).send({ from: account }, (error, transactionHash) => {
+                await baseContract.methods.approve(OrderbookAddress, quantity1).send({ from: account1 }, (error, transactionHash) => {
                   if (!error) {
                     // Transaction successful
                     console.log('Transaction hash:', transactionHash);
@@ -196,7 +220,7 @@ window.addEventListener('load', async () => {
                   }
                 });
 
-                await baseContract.methods.allowance(account, OrderbookAddress).call()
+                await baseContract.methods.allowance(account1, OrderbookAddress).call()
                     .then(allowanceAmount => {
                       console.log(`Allowance: ${allowanceAmount}`);
                     })
@@ -225,7 +249,7 @@ window.addEventListener('load', async () => {
                 //   });
                 // console.log(Transaction);
 
-                await OrderbookContract.methods.sellLimitOrder(Price,quantity,baseToken,quoteToken).send({ from: account }, (error, transactionHash) => {
+                await OrderbookContract.methods.sellLimitOrder(Price1,quantity1,baseToken1,quoteToken1).send({ from: account1 }, (error, transactionHash) => {
                   if (!error) {
                     // Transaction successful
                     console.log('Transaction hash:', transactionHash);
@@ -238,16 +262,42 @@ window.addEventListener('load', async () => {
                 
                 //console.log(await OrderbookContract.methods.getsellArray(0).call())
 
-                const tableBody = document.querySelector('#sell-order-list');
+                console.log(await OrderbookContract.methods.getsellArray(0).call())
+
+                const buylength = await OrderbookContract.methods.getBuyArrayLength().call();
                 const selllength = await OrderbookContract.methods.getsellArrayLength().call();
-                console.log(selllength)
+                const tableBody = document.querySelector('#sell-order-list');
+                console.log(buylength)
                 while (tableBody.firstChild) {
                     tableBody.removeChild(tableBody.firstChild);
                   }
                 for (i = 0; i<selllength;i++ ){
-                    const sellstruct = await OrderbookContract.methods.getBuyArray(i).call();
+                    const sellStruct = await OrderbookContract.methods.getsellArray(i).call();
 
-                    if (sellstruct[4]){
+                    if (sellStruct[4]){
+                        const tableBody1 = document.querySelector('#buy-order-list');
+                        while (tableBody1.firstChild) {
+                            tableBody1.removeChild(tableBody1.firstChild);
+                          }
+                        for (i = 0 ;i <buylength;i++) {
+                          const buyStruct = await OrderbookContract.methods.getBuyArray(i).call();
+
+                          if (buyStruct[4]) {
+                            continue;
+                          } else {
+                            const row1 = tableBody1.insertRow();
+                            const price1 = row1.insertCell(0);
+                            const quantity1 = row1.insertCell(1);
+                            const baseaddress1 = row1.insertCell(2);
+                            const quoteaddress1 = row1.insertCell(3);
+
+                            price1.textContent = buyStruct[2];
+                            quantity1.textContent = buyStruct[3];
+                            baseaddress1.textContent = buyStruct[6];
+                            quoteaddress1.textContent = buyStruct[7]
+                          }
+                          
+                        }
                         continue;
                     } else {
                         const row = tableBody.insertRow();
@@ -258,13 +308,14 @@ window.addEventListener('load', async () => {
 
                         
 
-                        price.textContent = sellstruct[2];
-                        quantity.textContent = sellstruct[3];
-                        baseaddress.textContent = sellstruct[6];
-                        quoteaddress.textContent = sellstruct[7];
+                        price.textContent = sellStruct[2];
+                        quantity.textContent = sellStruct[3];
+                        baseaddress.textContent = sellStruct[6];
+                        quoteaddress.textContent = sellStruct[7];
                     }
                     
                 }
+                
 
 
            } catch (error) {
