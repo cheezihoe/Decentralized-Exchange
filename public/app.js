@@ -89,23 +89,23 @@ window.addEventListener('load', async () => {
                 const account = accounts[0];
                 const total = Price*quantity;
 
-                await quoteContract.methods.approve(OrderbookAddress, total).send({ from: account }, (error, transactionHash) => {
-                  if (!error) {
-                    // Transaction successful
-                    console.log('Transaction hash:', transactionHash);
-                  } else {
-                    // Transaction failed
-                    console.error('Transaction error:', error);
-                  }
-                });
+                // await quoteContract.methods.approve(OrderbookAddress, total).send({ from: account }, (error, transactionHash) => {
+                //   if (!error) {
+                //     // Transaction successful
+                //     console.log('Transaction hash:', transactionHash);
+                //   } else {
+                //     // Transaction failed
+                //     console.error('Transaction error:', error);
+                //   }
+                // });
 
-                await quoteContract.methods.allowance(account, OrderbookAddress).call()
-                    .then(allowanceAmount => {
-                      console.log(`Allowance: ${allowanceAmount}`);
-                    })
-                    .catch(error => {
-                      console.error('Error checking allowance:', error);
-                    });
+                // await quoteContract.methods.allowance(account, OrderbookAddress).call()
+                //     .then(allowanceAmount => {
+                //       console.log(`Allowance: ${allowanceAmount}`);
+                //     })
+                //     .catch(error => {
+                //       console.error('Error checking allowance:', error);
+                //     });
 
                 //const addy = document.getElementById('account-address').textContent
                 
@@ -113,27 +113,57 @@ window.addEventListener('load', async () => {
                 const transaction = await buyorder.send({from: account})
                 console.log(transaction);
                 
-                // console.log(await OrderbookContract.methods.getBuyArray(0).call())
-                // console.log(array)
+                // console.log(await OrderbookContract.methods.getBuyArrayLength().call())
+                console.log(await OrderbookContract.methods.getBuyArray(0).call())
+
+                const buylength = await OrderbookContract.methods.getBuyArrayLength().call();
                 const tableBody = document.querySelector('#buy-order-list');
-                const row = tableBody.insertRow();
-                const reversedArguments = buyorder.arguments.slice().reverse();
-                reversedArguments.forEach(argument => {
+                console.log(buylength)
+                while (tableBody.firstChild) {
+                    tableBody.removeChild(tableBody.firstChild);
+                  }
+                for (i = 0; i<buylength;i++ ){
+                    const buyStruct = await OrderbookContract.methods.getBuyArray(i).call();
 
-                    // Assuming each element in the array is a string
-                    const argumentCell = row.insertCell(0);
-                    argumentCell.textContent = argument;
-                });
+                    if (buyStruct[4]){
+                        continue;
+                    } else {
+                        const row = tableBody.insertRow();
+                        const price = row.insertCell(0);
+                        const quantity = row.insertCell(1);
+                        const baseaddress = row.insertCell(2);
+                        const quoteaddress = row.insertCell(3);
 
-                const rows = Array.from(tableBody.querySelectorAll('tr'));
-                rows.sort((a, b) => {
-                    const priceA = parseFloat(a.cells[0].textContent);
-                    const priceB = parseFloat(b.cells[0].textContent);
-                    return priceB - priceA;
-                });
+                        
+
+                        price.textContent = buyStruct[2];
+                        quantity.textContent = buyStruct[3];
+                        baseaddress.textContent = buyStruct[6];
+                        quoteaddress.textContent = buyStruct[7];
+                    }
+                    
+                }
+                // console.log(array)
+
+                // const tableBody = document.querySelector('#buy-order-list');
+                // const row = tableBody.insertRow();
+                // const reversedArguments = buyorder.arguments.slice().reverse();
+                // reversedArguments.forEach(argument => {
+
+                //     // Assuming each element in the array is a string
+                //     const argumentCell = row.insertCell(0);
+                //     argumentCell.textContent = argument;
+                // });
+
+                // const rows = Array.from(tableBody.querySelectorAll('tr'));
+                // rows.sort((a, b) => {
+                //     const priceA = parseFloat(a.cells[0].textContent);
+                //     const priceB = parseFloat(b.cells[0].textContent);
+                //     return priceB - priceA;
+                // });
             
-                // Append the sorted rows back to the table
-                rows.forEach(row => tableBody.appendChild(row));
+                // // Append the sorted rows back to the table
+                // rows.forEach(row => tableBody.appendChild(row));
 
                 fetchUserTransactionsBUY(Price,quantity,baseToken,quoteToken);
 
@@ -157,50 +187,85 @@ window.addEventListener('load', async () => {
                 console.log(account)
                 const total = Price*quantity;
 
-                // await baseContract.methods.approve(OrderbookAddress, quantity).send({ from: account }, (error, transactionHash) => {
-                //   if (!error) {
-                //     // Transaction successful
-                //     console.log('Transaction hash:', transactionHash);
-                //   } else {
-                //     // Transaction failed
-                //     console.error('Transaction error:', error);
-                //   }
-                // });
+                await baseContract.methods.approve(OrderbookAddress, quantity).send({ from: account }, (error, transactionHash) => {
+                  if (!error) {
+                    // Transaction successful
+                    console.log('Transaction hash:', transactionHash);
+                  } else {
+                    // Transaction failed
+                    console.error('Transaction error:', error);
+                  }
+                });
 
-                // await baseContract.methods.allowance(account, OrderbookAddress).call()
-                //     .then(allowanceAmount => {
-                //       console.log(`Allowance: ${allowanceAmount}`);
-                //     })
-                //     .catch(error => {
-                //       console.error('Error checking allowance:', error);
-                //     });
+                await baseContract.methods.allowance(account, OrderbookAddress).call()
+                    .then(allowanceAmount => {
+                      console.log(`Allowance: ${allowanceAmount}`);
+                    })
+                    .catch(error => {
+                      console.error('Error checking allowance:', error);
+                    });
 
-                const sellorder = await OrderbookContract.methods.sellLimitOrder(Price,quantity,baseToken,quoteToken);
-                const Transaction = await sellorder.send({from: account})
-                console.log(Transaction);
-                // console.log(await OrderbookContract.methods.getsellArray(0).call())
+                // await quoteContract.methods.allowance(account, OrderbookAddress).call()
+                // .then(allowanceAmount => {
+                //   console.log(`Allowance: ${allowanceAmount}`);
+                // })
+                // .catch(error => {
+                //   console.error('Error checking allowance:', error);
+                // }) 
+
+                // const sellorder = await OrderbookContract.methods.sellLimitOrder(Price,quantity,baseToken,quoteToken);
+                // const Transaction = await sellorder.send({from: account})
+                // await window.ethereum.request({
+                //     "method": "eth_sendTransaction",
+                //     "params": [
+                //     {   to:OrderbookAddress,
+                //         from:account,
+                //         data:sellorder,
+                //     }
+                //     ]
+                //   });
+                // console.log(Transaction);
+
+                await OrderbookContract.methods.sellLimitOrder(Price,quantity,baseToken,quoteToken).send({ from: account }, (error, transactionHash) => {
+                  if (!error) {
+                    // Transaction successful
+                    console.log('Transaction hash:', transactionHash);
+                  } else {
+                    // Transaction failed
+                    console.error('Transaction error:', error);
+                  }
+                });
+                console.log(OrderbookContract.events.Traded())
+                
+                //console.log(await OrderbookContract.methods.getsellArray(0).call())
 
                 const tableBody = document.querySelector('#sell-order-list');
-                const row = tableBody.insertRow();
-                const reversedArguments = sellorder.arguments.slice().reverse();
-                reversedArguments.forEach(argument => {
+                const selllength = await OrderbookContract.methods.getsellArrayLength().call();
+                console.log(selllength)
+                while (tableBody.firstChild) {
+                    tableBody.removeChild(tableBody.firstChild);
+                  }
+                for (i = 0; i<selllength;i++ ){
+                    const sellstruct = await OrderbookContract.methods.getBuyArray(i).call();
 
-                    // Assuming each element in the array is a string
-                    const argumentCell = row.insertCell(0);
-                    argumentCell.textContent = argument;
-                });
+                    if (sellstruct[4]){
+                        continue;
+                    } else {
+                        const row = tableBody.insertRow();
+                        const price = row.insertCell(0);
+                        const quantity = row.insertCell(1);
+                        const baseaddress = row.insertCell(2);
+                        const quoteaddress = row.insertCell(3);
 
-                const rows = Array.from(tableBody.querySelectorAll('tr'));
-                rows.sort((a, b) => {
-                    const priceA = parseFloat(a.cells[0].textContent);
-                    const priceB = parseFloat(b.cells[0].textContent);
-                    return priceA - priceB;
-                });
-            
-                // Append the sorted rows back to the table
-                rows.forEach(row => tableBody.appendChild(row));
+                        
 
-                fetchUserTransactionsSELL();
+                        price.textContent = sellstruct[2];
+                        quantity.textContent = sellstruct[3];
+                        baseaddress.textContent = sellstruct[6];
+                        quoteaddress.textContent = sellstruct[7];
+                    }
+                    
+                }
 
 
            } catch (error) {
@@ -318,3 +383,21 @@ window.addEventListener('load', async () => {
     }
 });
 
+// async function InsertBuyTrades() {
+//     const buylength = OrderbookContract.getBuyArrayLength();
+//     const selllength = OrderbookContract.getsellArrayLength();
+//     const tableBody = document.querySelector('#buy-order-list');
+    
+//     for (i = 0; i<buylength;i++ ){
+//         const row = tableBody.insertRow();
+//         const price = row.insertCell(0);
+//         const quantity = row.insertCell(1);
+//         const baseaddress = row.insertCell(2);
+//         const quoteaddress = row.insertCell(3);
+//         price.textContent = OrderbookContract.getBuyArray(i).price;
+//         quantity.textContent = OrderbookContract.getBuyArray(i).quantity;
+//         baseaddress.textContent = OrderbookContract.getBuyArray(i).baseToken;
+//         quoteaddress.textContent = OrderbookContract.getBuyArray(i).quoteToken;
+//     }
+
+// }
