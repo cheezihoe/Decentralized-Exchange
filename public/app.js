@@ -323,7 +323,7 @@ window.addEventListener('load', async () => {
                console.error ('Error issuing sell order', error);
            }
        });
-       async function cancelOrder(id, isBuyOrder) {
+       async function cancelOrder(id, isBuyOrder,price,quant) {
         try {
             await OrderbookContract.methods.cancelOrders(id, isBuyOrder).send({ from: accounts[0] });
             console.log(`Order with ID ${id} cancelled successfully`);
@@ -331,13 +331,29 @@ window.addEventListener('load', async () => {
             // fetchUserTransactions();
             const userTransactionList = document.getElementById('user-transaction-list');
             const rows = userTransactionList.querySelectorAll('tr');
+
+            const buyList = document.getElementById('buy-orders');
+            const buyRows = userTransactionList.querySelectorAll('tr');
+
+            const sellList = document.getElementById('sell-orders');
+            const sellRows = userTransactionList.querySelectorAll('tr');
+            
             if (isBuyOrder==true){
                 rows.forEach(row => {
-                    const typeCell = row.cells[6]; // Assuming "Type" column is at index 5
-                    const idCell = row.cells[0];   // Assuming ID column is at index 0
+                    const typeCell = row.cells[6]; 
+                    const idCell = row.cells[0];   
                     const targetId = id-1; // Replace with your specific ID
 
                     if (typeCell.textContent.trim() === 'Buy'&& idCell.textContent.trim() === targetId.toString()) {
+                        row.remove();
+                    }
+                });
+                buyRows.forEach(row => {
+                    const quantCell = row.cells[1];
+                    const priceCell = row.cells[0];
+                    const targetId = id-1; // Replace with your specific ID
+
+                    if (quantCell.textContent.trim() === quant.toString() && priceCell.textContent.trim() === price.toString()) {
                         row.remove();
                     }
                 });
@@ -386,7 +402,7 @@ window.addEventListener('load', async () => {
                 // Add a 'Cancel' button with an event listener to cancel the order
                 const cancelButton = document.createElement('button');
                 cancelButton.textContent = 'Cancel';
-                cancelButton.addEventListener('click', () => cancelOrder(rowIndex,true));
+                cancelButton.addEventListener('click', () => cancelOrder(rowIndex,true,price,quant));
 
                 const actionCell = row.insertCell(5);
                 actionCell.appendChild(cancelButton);
@@ -398,7 +414,7 @@ window.addEventListener('load', async () => {
             }
         }
 
-        async function fetchUserTransactionsSELL() {
+        async function fetchUserTransactionsSELL(price,quant,base,quote) {
             const userTransactionList = document.getElementById('user-transaction-list');
             // userTransactionList.innerHTML = ''; // Clear previous content
 
@@ -415,16 +431,16 @@ window.addEventListener('load', async () => {
                 // Add cells based on transaction properties (id, price, quantity, etc.)
                 row.insertCell(0).textContent = rowIndexSell;
                 rowIndexSell++;
-                row.insertCell(1).textContent = userTransactions.price;
-                row.insertCell(2).textContent = userTransactions.quantity;
-                row.insertCell(3).textContent = userTransactions.baseToken;
-                row.insertCell(4).textContent = userTransactions.quoteToken;
+                row.insertCell(1).textContent = price;
+                row.insertCell(2).textContent = quant;
+                row.insertCell(3).textContent = base;
+                row.insertCell(4).textContent = quote;
                 row.insertCell(5).textContent = 'Sell';
 
                 // Add a 'Cancel' button with an event listener to cancel the order
                 const cancelButton = document.createElement('button');
                 cancelButton.textContent = 'Cancel';
-                cancelButton.addEventListener('click', () => cancelOrder(rowIndexSell,false));
+                cancelButton.addEventListener('click', () => cancelOrder(rowIndexSell,false,price,quant));
 
                 const actionCell = row.insertCell(5);
                 actionCell.appendChild(cancelButton);
