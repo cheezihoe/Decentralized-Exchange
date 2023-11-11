@@ -280,17 +280,30 @@ window.addEventListener('load', async () => {
             // fetchUserTransactions();
             const userTransactionList = document.getElementById('user-transaction-list');
             const rows = userTransactionList.querySelectorAll('tr');
-            
-            rows.forEach(row => {
-                const typeCell = row.cells[6]; // Assuming "Type" column is at index 5
-                const idCell = row.cells[0];   // Assuming ID column is at index 0
-                const targetId = id-1; // Replace with your specific ID
+            if (isBuyOrder==true){
+                rows.forEach(row => {
+                    const typeCell = row.cells[6]; // Assuming "Type" column is at index 5
+                    const idCell = row.cells[0];   // Assuming ID column is at index 0
+                    const targetId = id-1; // Replace with your specific ID
 
-                if (typeCell.textContent.trim() === 'Buy'&& idCell.textContent.trim() === targetId.toString()) {
-                    row.remove();
-                }
-            });
-        } catch (error) {
+                    if (typeCell.textContent.trim() === 'Buy'&& idCell.textContent.trim() === targetId.toString()) {
+                        row.remove();
+                    }
+                });
+            }
+            else{
+                rows.forEach(row => {
+                    const typeCell = row.cells[6]; // Assuming "Type" column is at index 5
+                    const idCell = row.cells[0];   // Assuming ID column is at index 0
+                    const targetId = id-1; // Replace with your specific ID
+
+                    if (typeCell.textContent.trim() === 'Sell'&& idCell.textContent.trim() === targetId.toString()) {
+                        row.remove();
+                    }
+                });
+            }
+        } 
+        catch (error) {
             console.error(`Error cancelling order with ID ${id}:`, error);
         }
     }
@@ -360,7 +373,7 @@ window.addEventListener('load', async () => {
                 // Add a 'Cancel' button with an event listener to cancel the order
                 const cancelButton = document.createElement('button');
                 cancelButton.textContent = 'Cancel';
-                cancelButton.addEventListener('click', () => cancelOrder(transaction.id,transaction.isisbuyOrder));
+                cancelButton.addEventListener('click', () => cancelOrder(rowIndexSell,false));
 
                 const actionCell = row.insertCell(5);
                 actionCell.appendChild(cancelButton);
