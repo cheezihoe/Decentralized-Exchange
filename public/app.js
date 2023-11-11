@@ -33,6 +33,7 @@ window.addEventListener('load', async () => {
 
         // row number for user transactions table
         rowIndex = 1;
+        rowIndexSell = 1;
         
   
         // Add event listener for the "Connect Wallet" button
@@ -112,7 +113,7 @@ window.addEventListener('load', async () => {
                 const transaction = await buyorder.send({from: account})
                 console.log(transaction);
                 
-                console.log(await OrderbookContract.methods.getBuyArray(0).call())
+                // console.log(await OrderbookContract.methods.getBuyArray(0).call())
                 // console.log(array)
                 const tableBody = document.querySelector('#buy-order-list');
                 const row = tableBody.insertRow();
@@ -134,7 +135,7 @@ window.addEventListener('load', async () => {
                 // Append the sorted rows back to the table
                 rows.forEach(row => tableBody.appendChild(row));
 
-                fetchUserTransactionsBUY();
+                fetchUserTransactionsBUY(Price,quantity,baseToken,quoteToken);
 
             } catch (error) {
                 console.error ('Error issuing buy order', error);
@@ -208,17 +209,29 @@ window.addEventListener('load', async () => {
        });
        async function cancelOrder(id, isBuyOrder) {
         try {
-            await OrderbookContract.methods.cancelOrder(id, isBuyOrder).send({ from: accounts[0] });
+            await OrderbookContract.methods.cancelOrders(id, isBuyOrder).send({ from: accounts[0] });
             console.log(`Order with ID ${id} cancelled successfully`);
             // You may want to refresh the user transactions table after cancellation
-            fetchUserTransactions();
+            // fetchUserTransactions();
+            const userTransactionList = document.getElementById('user-transaction-list');
+            const rows = userTransactionList.querySelectorAll('tr');
+            
+            rows.forEach(row => {
+                const typeCell = row.cells[6]; // Assuming "Type" column is at index 5
+                const idCell = row.cells[0];   // Assuming ID column is at index 0
+                const targetId = id-1; // Replace with your specific ID
+
+                if (typeCell.textContent.trim() === 'Buy'&& idCell.textContent.trim() === targetId.toString()) {
+                    row.remove();
+                }
+            });
         } catch (error) {
             console.error(`Error cancelling order with ID ${id}:`, error);
         }
     }
        
        // Function to fetch and populate user transactions
-        async function fetchUserTransactionsBUY() {
+        async function fetchUserTransactionsBUY(price,quant,base,quote) {
             const userTransactionList = document.getElementById('user-transaction-list');
             // userTransactionList.innerHTML = ''; // Clear previous content
 
@@ -226,7 +239,7 @@ window.addEventListener('load', async () => {
                 // Fetch user transactions (both buy and sell orders)
                 buyArrayLength = await OrderbookContract.methods.getBuyArrayLength().call();
                 console.log(buyArrayLength);
-                userTransactions = await OrderbookContract.methods.getBuyArray(buyArrayLength-1).call();
+                userTransactions = await OrderbookContract.methods.getBuyArray(0).call();
                 console.log(userTransactions);
                 // const userTransactions = await OrderbookContract.methods.getSellArray(0).call();
                 
@@ -235,18 +248,20 @@ window.addEventListener('load', async () => {
                 // Add cells based on transaction properties (id, price, quantity, etc.)
                 row.insertCell(0).textContent = rowIndex;
                 rowIndex++;
-                row.insertCell(1).textContent = userTransactions.price;
-                row.insertCell(2).textContent = userTransactions.quantity;
-                row.insertCell(3).textContent = userTransactions.baseToken;
-                row.insertCell(4).textContent = userTransactions.quoteToken;
+                row.insertCell(1).textContent = price;
+                row.insertCell(2).textContent = quant;
+                row.insertCell(3).textContent = base;
+                row.insertCell(4).textContent = quote;
+                row.insertCell(5).textContent = 'Buy';
 
                 // Add a 'Cancel' button with an event listener to cancel the order
                 const cancelButton = document.createElement('button');
                 cancelButton.textContent = 'Cancel';
-                cancelButton.addEventListener('click', () => cancelOrder(transaction.id,transaction.isisbuyOrder));
+                cancelButton.addEventListener('click', () => cancelOrder(rowIndex,true));
 
                 const actionCell = row.insertCell(5);
                 actionCell.appendChild(cancelButton);
+                
 
 
             } catch (error) {
@@ -269,12 +284,13 @@ window.addEventListener('load', async () => {
 
                 const row = userTransactionList.insertRow();
                 // Add cells based on transaction properties (id, price, quantity, etc.)
-                row.insertCell(0).textContent = rowIndex;
-                rowIndex++;
+                row.insertCell(0).textContent = rowIndexSell;
+                rowIndexSell++;
                 row.insertCell(1).textContent = userTransactions.price;
                 row.insertCell(2).textContent = userTransactions.quantity;
                 row.insertCell(3).textContent = userTransactions.baseToken;
                 row.insertCell(4).textContent = userTransactions.quoteToken;
+                row.insertCell(5).textContent = 'Sell';
 
                 // Add a 'Cancel' button with an event listener to cancel the order
                 const cancelButton = document.createElement('button');
