@@ -27,6 +27,12 @@ window.addEventListener('load', async () => {
 
         const baseContract = new web3Provider.eth.Contract(abiAIT, '0xd1a11f66bBDB8999262aCb694E97A2b34D41f3c7') 
         const quoteContract = new web3Provider.eth.Contract(abiAIT, '0xde465D7dc0eF6aA56F6a1365af89F3AA73BEa586') 
+
+        const accounts = await web3Provider.eth.requestAccounts();
+        const account = accounts[0];
+
+        // row number for user transactions table
+        rowIndex = 1;
         
   
         // Add event listener for the "Connect Wallet" button
@@ -158,6 +164,8 @@ window.addEventListener('load', async () => {
                 // // Append the sorted rows back to the table
                 // rows.forEach(row => tableBody.appendChild(row));
 
+                fetchUserTransactionsBUY();
+
             } catch (error) {
                 console.error ('Error issuing buy order', error);
             }
@@ -230,41 +238,121 @@ window.addEventListener('load', async () => {
                 
                 //console.log(await OrderbookContract.methods.getsellArray(0).call())
 
-                
-                const selllength = await OrderbookContract.methods.getsellArrayLength().call();
-                const tableBody = document.querySelector('#buy-order-list');
-                console.log(selllength)
-                while (tableBody.firstChild) {
-                    tableBody.removeChild(tableBody.firstChild);
-                  }
-                for (i = 0; i<selllength;i++ ){
-                    const sellStruct = await OrderbookContract.methods.getsellArray(i).call();
+                const tableBody = document.querySelector('#sell-order-list');
+                const row = tableBody.insertRow();
+                const reversedArguments = order.arguments.slice().reverse();
+                reversedArguments.forEach(argument => {
 
-                    if (sellStruct[4]){
-                        continue;
-                    } else {
-                        const row = tableBody.insertRow();
-                        const price = row.insertCell(0);
-                        const quantity = row.insertCell(1);
-                        const baseaddress = row.insertCell(2);
-                        const quoteaddress = row.insertCell(3);
+                    // Assuming each element in the array is a string
+                    const argumentCell = row.insertCell(0);
+                    argumentCell.textContent = argument;
+                });
 
-                        
+                const rows = Array.from(tableBody.querySelectorAll('tr'));
+                rows.sort((a, b) => {
+                    const priceA = parseFloat(a.cells[0].textContent);
+                    const priceB = parseFloat(b.cells[0].textContent);
+                    return priceA - priceB;
+                });
+            
+                // Append the sorted rows back to the table
+                rows.forEach(row => tableBody.appendChild(row));
 
-                        price.textContent = sellStruct[2];
-                        quantity.textContent = sellStruct[3];
-                        baseaddress.textContent = sellStruct[6];
-                        quoteaddress.textContent = sellStruct[7];
-                    }
-                    
-                }
 
            } catch (error) {
                console.error ('Error issuing sell order', error);
            }
-       });   
+       });
+       async function cancelOrder(id, isBuyOrder) {
+        try {
+            await OrderbookContract.methods.cancelOrder(id, isBuyOrder).send({ from: accounts[0] });
+            console.log(`Order with ID ${id} cancelled successfully`);
+            // You may want to refresh the user transactions table after cancellation
+            fetchUserTransactions();
+        } catch (error) {
+            console.error(`Error cancelling order with ID ${id}:`, error);
+        }
+    }
+       
+       // Function to fetch and populate user transactions
+        async function fetchUserTransactionsBUY() {
+            const userTransactionList = document.getElementById('user-transaction-list');
+            // userTransactionList.innerHTML = ''; // Clear previous content
+
+            try {
+                // Fetch user transactions (both buy and sell orders)
+                buyArrayLength = await OrderbookContract.methods.getBuyArrayLength().call();
+                console.log(buyArrayLength);
+                userTransactions = await OrderbookContract.methods.getBuyArray(buyArrayLength-1).call();
+                console.log(userTransactions);
+                // const userTransactions = await OrderbookContract.methods.getSellArray(0).call();
+                
+
+                const row = userTransactionList.insertRow();
+                // Add cells based on transaction properties (id, price, quantity, etc.)
+                row.insertCell(0).textContent = rowIndex;
+                rowIndex++;
+                row.insertCell(1).textContent = userTransactions.price;
+                row.insertCell(2).textContent = userTransactions.quantity;
+                row.insertCell(3).textContent = userTransactions.baseToken;
+                row.insertCell(4).textContent = userTransactions.quoteToken;
+
+                // Add a 'Cancel' button with an event listener to cancel the order
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Cancel';
+                cancelButton.addEventListener('click', () => cancelOrder(transaction.id,transaction.isisbuyOrder));
+
+                const actionCell = row.insertCell(5);
+                actionCell.appendChild(cancelButton);
+
+
+            } catch (error) {
+                console.error('Error fetching user transactions:', error);
+            }
+        }
+
+        async function fetchUserTransactionsSELL() {
+            const userTransactionList = document.getElementById('user-transaction-list');
+            // userTransactionList.innerHTML = ''; // Clear previous content
+
+            try {
+                // Fetch user transactions (both buy and sell orders)
+                const buyArrayLength = await OrderbookContract.methods.getSellArrayLength().call();
+                console.log(buyArrayLength);
+                const userTransactions = await OrderbookContract.methods.getSellArray(buyArrayLength-1).call();
+                console.log(userTransactions);
+                // const userTransactions = await OrderbookContract.methods.getSellArray(0).call();
+                
+
+                const row = userTransactionList.insertRow();
+                // Add cells based on transaction properties (id, price, quantity, etc.)
+                row.insertCell(0).textContent = rowIndex;
+                rowIndex++;
+                row.insertCell(1).textContent = userTransactions.price;
+                row.insertCell(2).textContent = userTransactions.quantity;
+                row.insertCell(3).textContent = userTransactions.baseToken;
+                row.insertCell(4).textContent = userTransactions.quoteToken;
+
+                // Add a 'Cancel' button with an event listener to cancel the order
+                const cancelButton = document.createElement('button');
+                cancelButton.textContent = 'Cancel';
+                cancelButton.addEventListener('click', () => cancelOrder(transaction.id,transaction.isisbuyOrder));
+
+                const actionCell = row.insertCell(5);
+                actionCell.appendChild(cancelButton);
+
+
+            } catch (error) {
+                console.error('Error fetching user transactions:', error);
+            }
+        }
+        // buyArrayLength = await OrderbookContract.methods.getBuyArrayLength().call();
+        // console.log(buyArrayLength);
+        // userTransactions = await OrderbookContract.methods.getBuyArray(5).call();
+        // console.log(await OrderbookContract.methods.getBuyArray(6).call());
 
         // Fetch and display order book data
+        // fetchUserTransactions();
         // You will need to retrieve and display order book data here
     } else {
         alert('Please install the MetaMask extension for Google Chrome.');
