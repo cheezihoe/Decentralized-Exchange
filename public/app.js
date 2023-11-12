@@ -353,8 +353,8 @@ window.addEventListener('load', async () => {
                     const quantCell = row.cells[1];
                     const priceCell = row.cells[0];
                     const targetId = id-1; // Replace with your specific ID
-                    console_log(quantCell.textContent.trim());
-                    console_log(priceCell.textContent.trim());
+                    console.log(quantCell.textContent.trim());
+                    console.log(priceCell.textContent.trim());
 
                     if (quantCell.textContent.trim() === quant.toString() && priceCell.textContent.trim() === price.toString()) {
                         row.remove();
@@ -375,8 +375,8 @@ window.addEventListener('load', async () => {
                   const quantCell = row.cells[1];
                   const priceCell = row.cells[0];
                   const targetId = id-1; // Replace with your specific ID
-                  console_log(quantCell.textContent.trim());
-                  console_log(priceCell.textContent.trim());
+                  console.log(quantCell.textContent.trim());
+                  console.log(priceCell.textContent.trim());
 
                   if (quantCell.textContent.trim() === quant.toString() && priceCell.textContent.trim() === price.toString()) {
                       row.remove();
