@@ -125,14 +125,14 @@ window.addEventListener('load', async () => {
                   }
                 for (i = 0; i<buylength;i++ ){
                     const buyStruct = await OrderbookContract.methods.getBuyArray(i).call();
-
+                    console.log(buyStruct)
                     if (buyStruct[4]){
                         const tableBody1 = document.querySelector('#sell-order-list');
                         while (tableBody1.firstChild) {
                             tableBody1.removeChild(tableBody1.firstChild);
                           }
-                        for (i = 0 ;i <selllength;i++) {
-                          const sellStruct = await OrderbookContract.methods.getsellArray(i).call();
+                        for (j = 0 ;j <selllength;j++) {
+                          const sellStruct = await OrderbookContract.methods.getsellArray(j).call();
 
                           if (sellStruct[4]) {
                             continue;
@@ -280,23 +280,23 @@ window.addEventListener('load', async () => {
                         while (tableBody1.firstChild) {
                             tableBody1.removeChild(tableBody1.firstChild);
                           }
-                        for (i = 0 ;i <buylength;i++) {
-                          const buyStruct = await OrderbookContract.methods.getBuyArray(i).call();
+                        for (j = 0 ;j <buylength;j++) {
+                          const buyStruct = await OrderbookContract.methods.getBuyArray(j).call();
 
-                          if (buyStruct[4]) {
-                            continue;
-                          } else {
-                            const row1 = tableBody1.insertRow();
-                            const price1 = row1.insertCell(0);
-                            const quantity1 = row1.insertCell(1);
-                            const baseaddress1 = row1.insertCell(2);
-                            const quoteaddress1 = row1.insertCell(3);
+                            if (buyStruct[4]) {
+                              continue;
+                            } else {
+                              const row1 = tableBody1.insertRow();
+                              const price1 = row1.insertCell(0);
+                              const quantity1 = row1.insertCell(1);
+                              const baseaddress1 = row1.insertCell(2);
+                              const quoteaddress1 = row1.insertCell(3);
 
-                            price1.textContent = buyStruct[2];
-                            quantity1.textContent = buyStruct[3];
-                            baseaddress1.textContent = buyStruct[6];
-                            quoteaddress1.textContent = buyStruct[7]
-                          }
+                              price1.textContent = buyStruct[2];
+                              quantity1.textContent = buyStruct[3];
+                              baseaddress1.textContent = buyStruct[6];
+                              quoteaddress1.textContent = buyStruct[7]
+                            }
                           
                         }
                         continue;
