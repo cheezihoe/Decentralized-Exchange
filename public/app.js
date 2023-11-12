@@ -334,10 +334,10 @@ window.addEventListener('load', async () => {
             const rows = userTransactionList.querySelectorAll('tr');
 
             const buyList = document.getElementById('buy-orders');
-            const buyRows = userTransactionList.querySelectorAll('tr');
+            const buyRows = buyList.querySelectorAll('tr');
 
             const sellList = document.getElementById('sell-orders');
-            const sellRows = userTransactionList.querySelectorAll('tr');
+            const sellRows = sellList.querySelectorAll('tr');
             
             if (isBuyOrder==true){
                 rows.forEach(row => {
@@ -353,6 +353,8 @@ window.addEventListener('load', async () => {
                     const quantCell = row.cells[1];
                     const priceCell = row.cells[0];
                     const targetId = id-1; // Replace with your specific ID
+                    console_log(quantCell.textContent.trim());
+                    console_log(priceCell.textContent.trim());
 
                     if (quantCell.textContent.trim() === quant.toString() && priceCell.textContent.trim() === price.toString()) {
                         row.remove();
@@ -369,6 +371,17 @@ window.addEventListener('load', async () => {
                         row.remove();
                     }
                 });
+                sellRows.forEach(row => {
+                  const quantCell = row.cells[1];
+                  const priceCell = row.cells[0];
+                  const targetId = id-1; // Replace with your specific ID
+                  console_log(quantCell.textContent.trim());
+                  console_log(priceCell.textContent.trim());
+
+                  if (quantCell.textContent.trim() === quant.toString() && priceCell.textContent.trim() === price.toString()) {
+                      row.remove();
+                  }
+              });
             }
         } 
         catch (error) {
