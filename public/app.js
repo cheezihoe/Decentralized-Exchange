@@ -55,6 +55,8 @@ window.addEventListener('load', async () => {
             const assetName = document.getElementById('asset-name').value;
             const assetSymbol = document.getElementById('asset-symbol').value;
             const initialSupply = document.getElementById('initial-supply').value; // Add an input for initial supply
+            // Convert the input amount to wei (smallest unit)
+            const initialSupplyWei = web3Provider.utils.toWei(initialSupply);
         
             try {
                 const accounts = await web3Provider.eth.requestAccounts();
@@ -63,7 +65,7 @@ window.addEventListener('load', async () => {
                 // Deploy a new AssetToken contract
                 const deployedToken = await assetTokenContract.deploy({
                     data: AITbytecode,
-                    arguments: [assetName, assetSymbol, initialSupply], // Pass three arguments
+                    arguments: [assetName, assetSymbol, initialSupplyWei], // Pass three arguments
                 }).send({ from: account });
         
                 // Mint new tokens
