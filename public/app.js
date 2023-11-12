@@ -35,7 +35,7 @@ window.addEventListener('load', async () => {
         rowIndex = 1;
         rowIndexSell = 1;
         
-  
+        refreshOrders()
         // Add event listener for the "Connect Wallet" button
         document.getElementById('connect-wallet').addEventListener('click', async () => {
             try {
@@ -115,59 +115,59 @@ window.addEventListener('load', async () => {
                 
                 // console.log(await OrderbookContract.methods.getBuyArrayLength().call())
                 //console.log(await OrderbookContract.methods.getBuyArray(0).call())
+                
+                 refreshOrders()
+                // const buylength = await OrderbookContract.methods.getBuyArrayLength().call();
+                // const selllength = await OrderbookContract.methods.getsellArrayLength().call();
+                // const tableBody = document.querySelector('#buy-order-list');
+                // const tableBody1 = document.querySelector('#sell-order-list');
 
+                // while (tableBody.firstChild) {
+                //     tableBody.removeChild(tableBody.firstChild);
+                // }
 
-                const buylength = await OrderbookContract.methods.getBuyArrayLength().call();
-                const selllength = await OrderbookContract.methods.getsellArrayLength().call();
-                const tableBody = document.querySelector('#buy-order-list');
-                const tableBody1 = document.querySelector('#sell-order-list');
+                // while (tableBody1.firstChild) {
+                //   tableBody1.removeChild(tableBody1.firstChild);
+                // } 
+                // for (let i = 0; i<buylength;i++ ){
+                //   const buyStruct = await OrderbookContract.methods.getBuyArray(i).call();
+                //   console.log('Buy Struct', buyStruct)
+                //   if (buyStruct[4]){
+                //       continue;
+                //   } else {
+                //       const row = tableBody.insertRow();
+                //       const price = row.insertCell(0);
+                //       const quantity = row.insertCell(1);
+                //       const baseaddress = row.insertCell(2);
+                //       const quoteaddress = row.insertCell(3);
 
-                while (tableBody.firstChild) {
-                    tableBody.removeChild(tableBody.firstChild);
-                }
-
-                while (tableBody1.firstChild) {
-                  tableBody1.removeChild(tableBody1.firstChild);
-                } 
-                for (let i = 0; i<buylength;i++ ){
-                  const buyStruct = await OrderbookContract.methods.getBuyArray(i).call();
-                  console.log('Buy Struct', buyStruct)
-                  if (buyStruct[4]){
-                      continue;
-                  } else {
-                      const row = tableBody.insertRow();
-                      const price = row.insertCell(0);
-                      const quantity = row.insertCell(1);
-                      const baseaddress = row.insertCell(2);
-                      const quoteaddress = row.insertCell(3);
-
-                      price.textContent = buyStruct[2];
-                      quantity.textContent = buyStruct[3];
-                      baseaddress.textContent = buyStruct[6];
-                      quoteaddress.textContent = buyStruct[7];
-                  }
+                //       price.textContent = buyStruct[2];
+                //       quantity.textContent = buyStruct[3];
+                //       baseaddress.textContent = buyStruct[6];
+                //       quoteaddress.textContent = buyStruct[7];
+                //   }
                   
-                }
+                // }
 
-                for (let i = 0; i<selllength;i++ ){
-                  const sellStruct = await OrderbookContract.methods.getsellArray(i).call();
-                  console.log('Sell Struct',sellStruct)
-                  if (sellStruct[4]){
-                      continue;
-                  } else {
-                      const row1 = tableBody1.insertRow();
-                      const price1 = row1.insertCell(0);
-                      const quantity1 = row1.insertCell(1);
-                      const baseaddress1 = row1.insertCell(2);
-                      const quoteaddress1 = row1.insertCell(3);
+                // for (let i = 0; i<selllength;i++ ){
+                //   const sellStruct = await OrderbookContract.methods.getsellArray(i).call();
+                //   console.log('Sell Struct',sellStruct)
+                //   if (sellStruct[4]){
+                //       continue;
+                //   } else {
+                //       const row1 = tableBody1.insertRow();
+                //       const price1 = row1.insertCell(0);
+                //       const quantity1 = row1.insertCell(1);
+                //       const baseaddress1 = row1.insertCell(2);
+                //       const quoteaddress1 = row1.insertCell(3);
 
-                      price1.textContent = sellStruct[2];
-                      quantity1.textContent = sellStruct[3];
-                      baseaddress1.textContent = sellStruct[6];
-                      quoteaddress1.textContent = sellStruct[7];
-                  }
+                //       price1.textContent = sellStruct[2];
+                //       quantity1.textContent = sellStruct[3];
+                //       baseaddress1.textContent = sellStruct[6];
+                //       quoteaddress1.textContent = sellStruct[7];
+                //   }
                   
-                }
+                // }
 
                 // console.log(array)
 
@@ -250,56 +250,100 @@ window.addEventListener('load', async () => {
                 //   });
                 // console.log(Transaction);
 
-                await OrderbookContract.methods.sellLimitOrder(Price1,quantity1,baseToken1,quoteToken1).send({ from: account1 }, (error, transactionHash) => {
-                  if (!error) {
-                    // Transaction successful
-                    console.log('Transaction hash:', transactionHash);
-                  } else {
-                    // Transaction failed
-                    console.error('Transaction error:', error);
-                  }
-                });
+                // await OrderbookContract.methods.sellLimitOrder(Price1,quantity1,baseToken1,quoteToken1).send({ from: account1 }, (error, transactionHash) => {
+                //   if (!error) {
+                //     // Transaction successful
+                //     console.log('Transaction hash:', transactionHash);
+                //   } else {
+                //     // Transaction failed
+                //     console.error('Transaction error:', error);
+                // //   }
+                // });
+                const sellorder = await OrderbookContract.methods.sellLimitOrder(Price1,quantity1,baseToken1,quoteToken1);
+                const transaction = await sellorder.send({from: account1})
+                console.log(transaction);
                 //console.log(OrderbookContract.events.Traded())
                 
                 //console.log(await OrderbookContract.methods.getsellArray(0).call())
 
                 //console.log(await OrderbookContract.methods.getsellArray(0).call())
+                refreshOrders();
+                // const buylength = await OrderbookContract.methods.getBuyArrayLength().call();
+                // const selllength = await OrderbookContract.methods.getsellArrayLength().call();
+                // const tableBody = document.querySelector('#buy-order-list');
+                // const tableBody1 = document.querySelector('#sell-order-list');
 
+                // while (tableBody1.firstChild) {
+                //   tableBody1.removeChild(tableBody1.firstChild);
+                // } 
+
+                // while (tableBody.firstChild) {
+                //     tableBody.removeChild(tableBody.firstChild);
+                // }
+
+                // for (let i = 0; i<selllength;i++ ){
+                //   const sellStruct = await OrderbookContract.methods.getsellArray(i).call();
+                //   console.log(sellStruct)
+                //   if (sellStruct[4]){
+                //       continue;
+                //   } else {
+                //       const row1 = tableBody1.insertRow();
+                //       const price1 = row1.insertCell(0);
+                //       const quantity1 = row1.insertCell(1);
+                //       const baseaddress1 = row1.insertCell(2);
+                //       const quoteaddress1 = row1.insertCell(3);
+
+                //       price1.textContent = sellStruct[2];
+                //       quantity1.textContent = sellStruct[3];
+                //       baseaddress1.textContent = sellStruct[6];
+                //       quoteaddress1.textContent = sellStruct[7];
+                //   }
+                // }
+
+                // for (let i = 0; i<buylength;i++ ){
+                //   const buyStruct = await OrderbookContract.methods.getBuyArray(i).call();
+                //   console.log(buyStruct)
+                //   if (buyStruct[4]){
+                //       continue;
+                //   } else {
+                //       const row = tableBody.insertRow();
+                //       const price = row.insertCell(0);
+                //       const quantity = row.insertCell(1);
+                //       const baseaddress = row.insertCell(2);
+                //       const quoteaddress = row.insertCell(3);
+
+                //       price.textContent = buyStruct[2];
+                //       quantity.textContent = buyStruct[3];
+                //       baseaddress.textContent = buyStruct[6];
+                //       quoteaddress.textContent = buyStruct[7];
+                //   }
+                  
+                // }         
+              
+                
+
+                //fetchUserTransactionsSELL(Price1,quantity1,baseToken1,quoteToken1);
+           } catch (error) {
+               console.error ('Error issuing sell order', error);
+           }
+       });
+
+       async function refreshOrders() {
                 const buylength = await OrderbookContract.methods.getBuyArrayLength().call();
                 const selllength = await OrderbookContract.methods.getsellArrayLength().call();
                 const tableBody = document.querySelector('#buy-order-list');
                 const tableBody1 = document.querySelector('#sell-order-list');
 
-                while (tableBody1.firstChild) {
-                  tableBody1.removeChild(tableBody1.firstChild);
-                } 
-
                 while (tableBody.firstChild) {
                     tableBody.removeChild(tableBody.firstChild);
                 }
 
-                for (let i = 0; i<selllength;i++ ){
-                  const sellStruct = await OrderbookContract.methods.getsellArray(i).call();
-                  console.log(sellStruct)
-                  if (sellStruct[4]){
-                      continue;
-                  } else {
-                      const row1 = tableBody1.insertRow();
-                      const price1 = row1.insertCell(0);
-                      const quantity1 = row1.insertCell(1);
-                      const baseaddress1 = row1.insertCell(2);
-                      const quoteaddress1 = row1.insertCell(3);
-
-                      price1.textContent = sellStruct[2];
-                      quantity1.textContent = sellStruct[3];
-                      baseaddress1.textContent = sellStruct[6];
-                      quoteaddress1.textContent = sellStruct[7];
-                  }
-                }
-
+                while (tableBody1.firstChild) {
+                  tableBody1.removeChild(tableBody1.firstChild);
+                } 
                 for (let i = 0; i<buylength;i++ ){
                   const buyStruct = await OrderbookContract.methods.getBuyArray(i).call();
-                  console.log(buyStruct)
+                  console.log('Buy Struct', buyStruct)
                   if (buyStruct[4]){
                       continue;
                   } else {
@@ -315,15 +359,28 @@ window.addEventListener('load', async () => {
                       quoteaddress.textContent = buyStruct[7];
                   }
                   
-                }         
-              
-                
+                }
 
-                //fetchUserTransactionsSELL(Price1,quantity1,baseToken1,quoteToken1);
-           } catch (error) {
-               console.error ('Error issuing sell order', error);
-           }
-       });
+                for (let i = 0; i<selllength;i++ ){
+                  const sellStruct = await OrderbookContract.methods.getsellArray(i).call();
+                  console.log('Sell Struct',sellStruct)
+                  if (sellStruct[4]){
+                      continue;
+                  } else {
+                      const row1 = tableBody1.insertRow();
+                      const price1 = row1.insertCell(0);
+                      const quantity1 = row1.insertCell(1);
+                      const baseaddress1 = row1.insertCell(2);
+                      const quoteaddress1 = row1.insertCell(3);
+
+                      price1.textContent = sellStruct[2];
+                      quantity1.textContent = sellStruct[3];
+                      baseaddress1.textContent = sellStruct[6];
+                      quoteaddress1.textContent = sellStruct[7];
+                  }
+                  
+                }
+       }
        async function cancelOrder(id, isBuyOrder,price,quant) {
         try {
             await OrderbookContract.methods.cancelOrders(id, isBuyOrder).send({ from: accounts[0] });

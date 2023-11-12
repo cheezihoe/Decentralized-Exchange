@@ -19,8 +19,9 @@ To deploy, you need to have the following:
 10. The Deployed contract address will be shown in the terminal
 
 ## Steps to Running the Web Application
-1. `python -m http.server`
-2. Open your web browser and navigate to http://localhost:8000
+1. `cd public`
+2. `python -m http.server`
+3. Open your web browser and navigate to http://localhost:8000
 
 
 
