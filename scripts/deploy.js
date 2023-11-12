@@ -15,6 +15,14 @@ async function main() {
     const orderbook = await ethers.deployContract("Orderbook");
   
     console.log("Orderbook address:", await orderbook.getAddress());
+
+    //Deploy AssetIssuerToken contract
+    // const AssetIssuerToken = await ethers.getContractFactory("AssetIssuerToken");
+    // const initialSupply = 1000000; // Set the initial supply as needed
+    // const assetIssuerToken = await AssetIssuerToken.deploy("AssetIssuerToken", "AIT", initialSupply);
+  
+    // console.log("Asset Token address:", await assetIssuerToken.getAddress());
+
   
   }
   
